@@ -2,4 +2,4 @@
 nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.openssl"]
 
 [start]
-cmd = "if [ -d Backend/public ]; then cd Backend; fi; if command -v php >/dev/null 2>&1; then PHP=php; else PHP=php82; fi; $PHP -S 0.0.0.0:$PORT -t public public/index.php"
+cmd = "bash -lc 'set -euo pipefail; if [ -d Backend/public ]; then cd Backend; fi; if command -v php >/dev/null 2>&1; then PHP=php; elif command -v php82 >/dev/null 2>&1; then PHP=php82; else echo \"php no encontrado\"; exit 127; fi; PORT_TO_USE=${PORT:-8080}; echo \"Starting PHP on port ${PORT_TO_USE}\"; exec $PHP -S 0.0.0.0:${PORT_TO_USE} -t public public/index.php'"
