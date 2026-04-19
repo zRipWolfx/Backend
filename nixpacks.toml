@@ -2,4 +2,4 @@
 nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.openssl"]
 
 [start]
-cmd = "php -S 0.0.0.0:$PORT -t public public/index.php"
+cmd = "if [ -d Backend/public ]; then cd Backend; fi; if command -v php >/dev/null 2>&1; then PHP=php; else PHP=php82; fi; $PHP -S 0.0.0.0:$PORT -t public public/index.php"
