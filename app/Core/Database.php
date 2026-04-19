@@ -18,11 +18,23 @@ final class Database
             return self::$pdo;
         }
 
-        $host = Env::get('DB_HOST', '127.0.0.1');
-        $port = Env::get('DB_PORT', '3306');
-        $db = Env::get('DB_NAME', '');
-        $user = Env::get('DB_USER', '');
-        $pass = Env::get('DB_PASS', '');
+        $url = Env::get('DATABASE_URL') ?? Env::get('MYSQL_URL');
+        if (is_string($url) && $url !== '') {
+            $parts = parse_url($url);
+            if (is_array($parts)) {
+                $host = (string)($parts['host'] ?? '127.0.0.1');
+                $port = (string)($parts['port'] ?? '3306');
+                $db = ltrim((string)($parts['path'] ?? ''), '/');
+                $user = (string)($parts['user'] ?? '');
+                $pass = (string)($parts['pass'] ?? '');
+            }
+        }
+
+        $host = $host ?? (Env::get('DB_HOST', '127.0.0.1') ?? '127.0.0.1');
+        $port = $port ?? (Env::get('DB_PORT', '3306') ?? '3306');
+        $db = $db ?? (Env::get('DB_NAME', '') ?? '');
+        $user = $user ?? (Env::get('DB_USER', '') ?? '');
+        $pass = $pass ?? (Env::get('DB_PASS', '') ?? '');
 
         if ($db === '' || $user === '') {
             throw new HttpException(500, 'Base de datos no configurada');
@@ -43,4 +55,3 @@ final class Database
         return self::$pdo;
     }
 }
-
